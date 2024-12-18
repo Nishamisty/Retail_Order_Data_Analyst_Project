@@ -1,1 +1,6 @@
+streamlit as st
+pandas as pd
+psycopg2
+from psycopg2 import sql
+altair as alt
 streamlit
