@@ -21,39 +21,3 @@ PostgreSQL: Database for storing and querying retail data.
 Pandas: Data manipulation and preprocessing.
 Altair: Charting library for creating visualizations.
 Python: Core programming language.
-
-Setup Instructions
-1. Prerequisites
-Python 3.8 or above
-PostgreSQL database
-pip for package management
-A dataset with the required schema (orders_csv, orders_basic, orders_details)
-2.Installation 
-3. Configure Database
-Update the database connection details in app.py
-Ensure the database schema matches the expected structure for the queries.
-4. Run the App
-Start the Streamlit app locally:
-streamlit run app.py
-Open your browser at http://localhost:8501.
-5. Deployment
-Deploying to Streamlit Cloud:
-Push your project to GitHub.
-Go to Streamlit Cloud and deploy your app.
-Ensure your requirements.txt and packages.txt are correctly set up.
-Application Workflow
-Select a Query: Choose from predefined or custom SQL queries.
-Execute Query: Fetch data directly from the PostgreSQL database.
-Visualize Results: Explore the data through dynamic and interactive visualizations.
-Future Enhancements
-Add support for additional databases (e.g., MySQL, SQLite).
-Implement more advanced visualizations (e.g., heatmaps, geographical maps).
-Enable user authentication for secure access.
-Automate ETL processes for real-time data analysis.
-Contributing
-Contributions are welcome! Please fork the repository and submit a pull request.
-Contact
-Author: Baby Ninsha
-Email: nishamisty06@gmail.com
-GitHub: 
-LinkedIn: 
