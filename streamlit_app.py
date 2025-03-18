@@ -102,7 +102,8 @@ own_queries ={
         SELECT ob.order_id,ob.order_date, ob.region, ob.segment, ob.ship_mode, od.category, od.quantity, od.cost_price, od.list_price
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id;""",
-    "2. SELECT ob.order_id, ob.order_date, ob.region, ob.city, od.category, od.quantity
+    "2. Find Orders in a Specific Region":"""
+        SELECT ob.order_id, ob.order_date, ob.region, ob.city, od.category, od.quantity
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id;""",
     "3. Find All Orders for a Specific Date":"""
