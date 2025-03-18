@@ -98,55 +98,61 @@ given_queries ={
         ORDER BY year;"""
 }
 own_queries ={
-    "1. Join to Fetch Complete Order Details": """
-        SELECT o.OrderID, o.OrderDate, o.CustomerID, od.ProductID, od.Quantity, od.UnitPrice, od.Discount, od.Profit
-        FROM Orders o
-        JOIN OrderDetails od ON o.OrderID = od.OrderID;""",
-    "2. Calculate Total Revenue per Order": """
-        SELECT OrderID, SUM(Quantity * UnitPrice) AS TotalRevenue
-        FROM OrderDetails
-        GROUP BY OrderID;""",
-    "3. Calculate Total Profit per Order": """
-        SELECT OrderID, SUM(Profit) AS TotalProfit
-        FROM OrderDetails
-        GROUP BY OrderID;""",
-    "4. Least Revenue Generating Products": """
-        SELECT ProductID, SUM(Quantity * UnitPrice) AS Revenue
-        FROM OrderDetails
-        GROUP BY ProductID
-        ORDER BY Revenue ASC
-        LIMIT 5;""",
-    "5. Count Orders by Region": """
-        SELECT Region, COUNT(OrderID) AS OrderCount
-        FROM Orders
-        GROUP BY Region;""",
-    "6. Calculate Average Discount by State": """
-        SELECT State, AVG(Discount) AS AvgDiscount
-        FROM Orders
-        GROUP BY State;""",
-    "7. Calculate Total Revenue for December": """
-        SELECT SUM(Quantity * UnitPrice) AS DecemberRevenue
-        FROM Orders o
-        JOIN OrderDetails od ON o.OrderID = od.OrderID
-        WHERE MONTH(o.OrderDate) = 12;""",
-    "8. Region with the Highest Profit": """
-        SELECT Region, SUM(Profit) AS TotalProfit
-        FROM Orders o
-        JOIN OrderDetails od ON o.OrderID = od.OrderID
-        GROUP BY Region
-        ORDER BY TotalProfit DESC
-        LIMIT 1;""",
-    "9. Identify Orders with No Profit": """
-        SELECT OrderID
-        FROM OrderDetails
-        WHERE Profit = 0;""",
-    "10. Most Frequently Ordered Product Category": """
-        SELECT p.Category, COUNT(od.ProductID) AS OrderCount
-        FROM OrderDetails od
-        JOIN Products p ON od.ProductID = p.ProductID
-        GROUP BY p.Category
-        ORDER BY OrderCount DESC
-        LIMIT 1;"""
+    "1. Select All Orders with Product Details":"""
+        SELECT ob.order_id,ob.order_date, ob.region, ob.segment, ob.ship_mode, od.category, od.quantity, od.cost_price, od.list_price
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id;""",
+    "2. Find Orders in a Specific Region":"""
+        SELECT ob.order_id, ob.order_date, ob.region, ob.city, od.category, od.quantity
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.region = 'West';""",
+    "3. Find All Orders for a Specific Date":"""
+        SELECT ob.order_id, ob.order_date, ob.city, ob.state, od.category, od.quantity
+        FROM orders_basic ob JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.order_date = '2022-06-20';""",
+    "4. Find Total Discount per Order":"""
+        SELECT ob.order_id,
+              SUM(od.quantity * od.list_price * (od.discount_percent / 100)) AS total_discount
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id
+        GROUP BY ob.order_id ORDER BY total_discount DESC;""",
+    "5. Get Orders for a Specific Customer Segment":"""
+        SELECT ob.order_id, ob.order_date, ob.segment, od.category, od.quantity
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.segment = 'Corporate';""",
+    "6. Calculate the Average List Price of Products":"""
+        SELECT ob.order_id, AVG(od.list_price) AS avg_list_price
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id
+        GROUP BY ob.order_id
+        ORDER BY avg_list_price DESC;""",
+    "7. Find Orders with the Highest Quantity Ordered":"""
+        SELECT ob.order_id, ob.order_date,
+               SUM(od.quantity) AS total_quantity
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id
+        GROUP BY ob.order_id
+        ORDER BY total_quantity DESC LIMIT 10;""",
+    "8. Find Total Revenue Per Order":"""
+        SELECT ob.order_id,
+              SUM(od.quantity * od.list_price) AS total_revenue
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id
+        GROUP BY ob.order_id
+        ORDER BY total_revenue DESC;""",
+    "9. Find the Total Profit for Each Order":"""
+        SELECT ob.order_id,
+              SUM((od.list_price - od.cost_price) * od.quantity) AS total_profit
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id
+        GROUP BY ob.order_id
+        ORDER BY total_profit DESC;""",
+    "10.Get All Orders with Their Total Discount Applied":"""
+        SELECT ob.order_id,
+               SUM(od.quantity * od.list_price * (od.discount_percent / 100)) AS total_discount
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id
+        GROUP BY ob.order_id
+        ORDER BY total_discount DESC;"""
 }
 # Streamlit UI
 st.title("Retail Order Data Analysts Project")
