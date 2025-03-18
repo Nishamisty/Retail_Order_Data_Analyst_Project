@@ -27,122 +27,287 @@ def connect_to_database():
 
 conn = connect_to_database()
 
-# Streamlit UI
-st.title("RETAIL ORDER DATA ANALYSIS")
-
-#Required questions split into two types
-
-GUVI_Provided_queries = {
-    "Find the top 10 highest revenue-generating products": 
-        'select r2.product_id,sum(r2.sale_price * r2.quantity) as total_revenue from retail2 r2 join retail1 r1 on r2.order_id = r1.order_id group by r2.product_id order by total_revenue desc limit 10;',
-    "Find the top 5 cities with the highest profit margins": 
-        'select r1.city, avg((r2.profit / r2.sale_price) * 100) as avg_profit_margin from retail1 r1 join retail2 r2 on r1.order_id = r2.order_id where  r2.sale_price > 0  group by r1.city order by avg_profit_margin desc limit 5;',
-    "Calculate the total discount given for each category": 
-        'select r1.category,sum(r2.discount) as total_discount from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.category order by total_discount desc;',
-    "Find the average sale price per product category": 
-        'select r1.category,avg(r2.sale_price) as avg_sale_price from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.category;',
-    "Find the region with the highest average sale price":
-        'select r1.region,avg(r2.sale_price) as highest_avg_sale_price from retail1 r1 join retail2 r2 on r1.order_id = r2.order_id group by r1.region order by highest_avg_sale_price desc limit 1;',
-    "Find the total profit per category": 
-        'select r1.category,sum(r2.profit) as total_profit from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.category order by total_profit desc;',
-    "Identify the top 3 segments with the highest quantity of orders": 
-        'select r1.segment,max(r2.quantity) as highest_quantity from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.segment order by highest_quantity desc limit 3;',
-    "Determine the average discount percentage given per region": 
-        'select r1.region,avg(r2.discount_percent) as avg_discount_percentage from retail1 r1 join retail2 r2  on r1.order_id=r2.order_id group by r1.region order by avg_discount_percentage desc;',
-    "Find the product category with the highest total profit": 
-        'select r1.category,sum(r2.profit) as total_profit from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.category order by total_profit desc limit 1;',
-    "Calculate the total revenue generated per year": 
-        'select extract(year from r1.order_date) as year, sum(r2.sale_price * r2.quantity) as total_revenue from retail1 r1 join retail2 r2 on r1.order_id = r2.order_id group by year order by year;',
-    }
-  
-SELF_Provided_queries = {
-    "Find the total number of orders placed in each region":
-        'select r1.region,count(distinct r1.order_id) as total_no_of_orders from retail1 r1 group by r1.region;',
-    "calculate the total revenue generated per product category":
-        'select r1.category,sum(r2.sale_price*r2.quantity) as total_revenue from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.category;',
-    "list all orders with their corresponding ship mode and total quantity ordered":
-        'select r1.order_id,r1.ship_mode,sum(r2.quantity) as total_quantity from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.order_id order by total_quantity desc;',
-    "Find the segment with maximum revenue":
-        'select r1.segment,sum(r2.sale_price*r2.quantity) as maximum_revenue from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.segment order by maximum_revenue desc limit 1;',
-    "Find the total discount given for each ship mode":
-        'select r1.ship_mode,sum(r2.discount) as total_discount from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.ship_mode;',
-    "Determine the number of unique product sold in each city":
-        'select r1.city,count(distinct r2.product_id) as nunique_product from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.city order by nunique_product desc;',
-    "Calculate the average profit margin for each product category":
-        'select r1.category,avg((r2.profit/r2.sale_price)*100) as avg_profit_margin from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id where r2.sale_price > 0 group by r1.category;',
-    "Find the top 3 cities with the highest revenue":
-        'select r1.city,sum(r2.sale_price*r2.quantity) as highest_revenue from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.city order by highest_revenue desc limit 1;',
-    "Find the total number of orders and total revenue for each country":
-        'select r1.country,count(distinct r1.order_id) as total_no_of_orders,sum(r2.sale_price*r2.quantity) as total_revenue from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.country;',
-    "list the top profitable products in each category":
-        'select r1.category,sum(r2.profit) as total_profit from retail1 r1 join retail2 r2 on r1.order_id=r2.order_id group by r1.category order by total_profit desc;',
-
+#Queries
+given_queries ={
+    "1. Top 10 Highest Revenue Generating Products": """
+        SELECT 
+            category AS product_name,
+            SUM(quantity * list_price) AS total_revenue
+        FROM orders_csv
+        GROUP BY category
+        ORDER BY total_revenue DESC
+        LIMIT 10;""",
+    "2. Top 5 Cities with Highest Profit Margins": """
+        SELECT city,
+            ROUND(
+               CASE
+               WHEN SUM(quantity * list_price) = 0 THEN 0  -- Avoid division by zero
+               ELSE (SUM(quantity * (list_price - cost_price))::NUMERIC / 
+                     NULLIF(SUM(quantity * list_price), 0)) * 100
+           END, 2) AS profit_margin
+        FROM orders_csv WHERE list_price IS NOT NULL AND cost_price IS NOT NULL AND quantity > 0  -- Ensure no missing or invalid data
+        GROUP BY city
+        ORDER BY profit_margin DESC LIMIT 5;""",
+    "3. Calculate the total discount given for each category": """
+        SELECT category,
+               SUM(COALESCE(list_price, 0) * COALESCE(quantity, 0) * (COALESCE(discount_percent, 0)::NUMERIC / 100)) AS total_discount
+        FROM orders_csv
+        GROUP BY category
+        ORDER BY total_discount DESC;""",
+    "4. Find the average sale price per product category":"""
+        SELECT category,
+               ROUND(SUM(list_price * quantity) / SUM(quantity), 2) AS average_sale_price
+        FROM orders_csv
+        GROUP BY category
+        ORDER BY average_sale_price DESC;""",
+    "5. Find the region with the highest average sale price":"""
+        SELECT region,
+               ROUND(SUM(list_price * quantity) / SUM(quantity), 2) AS average_sale_price
+        FROM orders_csv
+        GROUP BY region
+        ORDER BY average_sale_price DESC;""",
+    "6. Find the total profit per category":"""
+        SELECT category,
+               ROUND(SUM((list_price - cost_price) * quantity) ,2) AS total_profit
+        FROM orders_csv
+        GROUP BY category
+        ORDER BY total_profit DESC;""",
+    "7. Identify the top 3 segments with the highest quantity of orders":"""
+        SELECT segment,
+               SUM(quantity) AS total_quantity
+        FROM orders_csv WHERE quantity > 0  -- Ensure no invalid data
+        GROUP BY segment
+        ORDER BY total_quantity DESC LIMIT 3;""",
+    "8. Determine the average discount percentage given per region":"""
+        SELECT region,
+               ROUND(AVG(discount_percent) ,2) AS average_discount_percentage
+        FROM orders_csv
+        GROUP BY region
+        ORDER BY average_discount_percentage DESC;""",
+    "9. Find the product category with the highest total profit":"""
+        SELECT category,
+               ROUND(SUM((list_price - cost_price) * quantity), 2) AS total_profit
+        FROM orders_csv
+        GROUP BY category
+        ORDER BY total_profit DESC LIMIT 1;""",
+    "10.Calculate the total revenue generated per year":"""
+        SELECT EXTRACT(YEAR FROM order_date) AS year,
+               ROUND(SUM(list_price * quantity), 2) AS total_revenue
+        FROM orders_csv
+        GROUP BY year
+        ORDER BY year;"""
 }
+own_queries ={
+    "1. Join to Fetch Complete Order Details": """
+        SELECT o.OrderID, o.OrderDate, o.CustomerID, od.ProductID, od.Quantity, od.UnitPrice, od.Discount, od.Profit
+        FROM Orders o
+        JOIN OrderDetails od ON o.OrderID = od.OrderID;""",
+    "2. Calculate Total Revenue per Order": """
+        SELECT OrderID, SUM(Quantity * UnitPrice) AS TotalRevenue
+        FROM OrderDetails
+        GROUP BY OrderID;""",
+    "3. Calculate Total Profit per Order": """
+        SELECT OrderID, SUM(Profit) AS TotalProfit
+        FROM OrderDetails
+        GROUP BY OrderID;""",
+    "4. Least Revenue Generating Products": """
+        SELECT ProductID, SUM(Quantity * UnitPrice) AS Revenue
+        FROM OrderDetails
+        GROUP BY ProductID
+        ORDER BY Revenue ASC
+        LIMIT 5;""",
+    "5. Count Orders by Region": """
+        SELECT Region, COUNT(OrderID) AS OrderCount
+        FROM Orders
+        GROUP BY Region;""",
+    "6. Calculate Average Discount by State": """
+        SELECT State, AVG(Discount) AS AvgDiscount
+        FROM Orders
+        GROUP BY State;""",
+    "7. Calculate Total Revenue for December": """
+        SELECT SUM(Quantity * UnitPrice) AS DecemberRevenue
+        FROM Orders o
+        JOIN OrderDetails od ON o.OrderID = od.OrderID
+        WHERE MONTH(o.OrderDate) = 12;""",
+    "8. Region with the Highest Profit": """
+        SELECT Region, SUM(Profit) AS TotalProfit
+        FROM Orders o
+        JOIN OrderDetails od ON o.OrderID = od.OrderID
+        GROUP BY Region
+        ORDER BY TotalProfit DESC
+        LIMIT 1;""",
+    "9. Identify Orders with No Profit": """
+        SELECT OrderID
+        FROM OrderDetails
+        WHERE Profit = 0;""",
+    "10. Most Frequently Ordered Product Category": """
+        SELECT p.Category, COUNT(od.ProductID) AS OrderCount
+        FROM OrderDetails od
+        JOIN Products p ON od.ProductID = p.ProductID
+        GROUP BY p.Category
+        ORDER BY OrderCount DESC
+        LIMIT 1;"""
+}
+# Streamlit UI
+st.title("Retail Order Data Analysts Project")
+st.sidebar.title("Options")
 
-# Navigation options
-nav = st.radio("choose a Query", ["GUVI Provided Queries", "SELF Provided Queries"])
+query_type = st.sidebar.radio("Query Type:", ["Given Queries", "Own Queries"])
+query_selection = st.selectbox(
+    "Select a Query:",
+    list(given_queries.keys() if query_type == "Given Queries" else own_queries.keys()),
+)
 
-# choosing a Query based on navigation preferences
-if nav == "GUVI Provided Queries":
-    st.subheader("GUVI Provided Queries")
-    query = st.selectbox("choose a query to visualization process:", list(GUVI_Provided_queries.keys()))
-    choose_a_query_section = GUVI_Provided_queries
-elif nav == "SELF Provided Queries":                                                                           
-    st.subheader("SELF Provided Queries")
-    query = st.selectbox("choose a query to visualization process:", list(SELF_Provided_queries.keys()))
-    choose_a_query_section = SELF_Provided_queries
+data = pd.DataFrame()
+if conn:
+    if st.button("Run Query"):
+        query = given_queries[query_selection] if query_type == "Given Queries" else own_queries[query_selection]
+        try:
+            # Execute query and fetch results
+            data = pd.read_sql_query(query, conn)
+            #st.success("Query executed successfully!")
+            st.write(f"### Results for: {query_selection}")
+            st.dataframe(data)
+        
+            if "product_name" in data.columns and "total_revenue" in data.columns:
+               chart = alt.Chart(data).mark_bar().encode(
+               x="product_name",
+               y="total_revenue",
+               color="product_name",
+             )
+               st.altair_chart(chart, use_container_width=True)
+
+            elif "city" in data.columns and "profit_margin" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="city",
+                    y="profit_margin",
+                    color="city",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "category" in data.columns and "total_discount" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="category",
+                    y="total_discount",
+                    color="category",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "category" in data.columns and "average_sale_price" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="category",
+                    y="average_sale_price",
+                    color="category",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "region" in data.columns and "average_sale_price" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="region",
+                    y="average_sale_price",
+                    color="region",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "category" in data.columns and "total_profit" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="category",
+                    y="total_profit",
+                    color="category",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "segment" in data.columns and "total_quantity" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="segment",
+                    y="total_quantity",
+                    color="segment",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "region" in data.columns and "average_discount_percentage" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="region",
+                    y="average_discount_percentage",
+                    color="region",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "year" in data.columns and "total_revenue" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="year",
+                    y="total_revenue",
+                    color="year",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "order_id" in data.columns and "total_discount" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="order_id",
+                    y="total_discount",
+                    color="order_id",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "order_date" in data.columns and "quantity" in data.columns:
+                chart = alt.Chart(data).mark_line().encode(
+                    x="order_date",
+                    y="quantity",
+                    color="order_date",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "order_id" in data.columns and "total_profit" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="order_id",
+                    y="total_profit",
+                    color="order_id",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "region" in data.columns and "total_revenue" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="region",
+                    y="total_revenue",
+                    color="region",
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "avg_list_price" in data.columns and "order_id" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="order_id:N",  # Treat order_id as a nominal variable
+                    y="avg_list_price:Q",  # Treat avg_list_price as a quantitative variable
+                    color="order_id:N",
+                ).properties(
+                    title="Average List Price Per Order"
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "order_id" in data.columns and "total_quantity" in data.columns:
+                top_quantity_orders = data.nlargest(10, "total_quantity")
+                chart = alt.Chart(top_quantity_orders).mark_bar().encode(
+                    x="order_id:N",
+                    y="total_quantity:Q",
+                    color="order_id:N",
+                ).properties(
+                    title="Top 10 Orders with Highest Quantity"
+                )
+                st.altair_chart(chart, use_container_width=True)
+
+            elif "order_id" in data.columns and "total_revenue" in data.columns:
+                chart = alt.Chart(data).mark_bar().encode(
+                    x="order_id:N",
+                    y="total_revenue:Q",
+                    color="order_id:N",
+                ).properties(
+                    title="Total Revenue Per Order"
+                )
+                st.altair_chart(chart, use_container_width=True)
+            else:
+                st.write("No suitable data found for visualization.")
+
+        except Exception as e:
+               st.error("Error executing the query.")
+               st.error(f"Error: {e}")
 else:
-    query = None
-
-# Execute to visualize choosing query
-if query:
-    getting_result = run_query(choose_a_query_section[query])
-    if getting_result is not None:
-        st.dataframe(getting_result)
-
-
-# Execute to visualize based on choosed query
-       
-    if query == "Find the top 10 highest revenue-generating products":
-        getting_result = run_query(GUVI_Provided_queries[query])
-    elif query == "Find the top 5 cities with the highest profit margins":
-        getting_result = run_query(GUVI_Provided_queries[query])
-    elif query == "Calculate the total discount given for each category":
-        getting_result = run_query(GUVI_Provided_queries[query])
-    elif query == "Find the average sale price per product category":
-        getting_result = run_query(GUVI_Provided_queries[query])
-    elif query== "Find the region with the highest average sale price":
-        getting_result = run_query(GUVI_Provided_queries[query])
-    elif query == "Find the total profit per category":
-        getting_result = run_query(GUVI_Provided_queries[query])
-    elif query == "Identify the top 3 segments with the highest quantity of orders":
-        getting_result = run_query(GUVI_Provided_queries[query])
-    elif query == "Determine the average discount percentage given per region":
-        getting_result = run_query(GUVI_Provided_queries[query])
-    elif query == "Find the product category with the highest total profit":
-        getting_result = run_query(GUVI_Provided_queries[query])          
-    elif query == "Calculate the total revenue generated per year":
-        getting_result = run_query(GUVI_Provided_queries[query])    
-    elif query == "Find the total number of orders placed in each region":
-        getting_result = run_query(SELF_Provided_queries[query])
-    elif query == "calculate the total revenue generated per product category":
-        getting_result = run_query(SELF_Provided_queries[query])
-    elif query == "list all orders with their corresponding ship mode and total quantity ordered":
-        getting_result = run_query(SELF_Provided_queries[query])
-    elif query == "Find the segment with maximum revenue":
-        getting_result = run_query(SELF_Provided_queries[query])
-    elif query== "Find the total discount given for each ship mode":
-        getting_result = run_query(SELF_Provided_queries[query])
-    elif query == "Determine the number of unique product sold in each city":
-        getting_result = run_query(SELF_Provided_queries[query])
-    elif query == "Calculate the average profit margin for each product category":
-        getting_result = run_query(SELF_Provided_queries[query])
-    elif query == "Find the top 3 cities with the highest revenue":
-        getting_result = run_query(SELF_Provided_queries[query])
-    elif query == "Find the total number of orders and total revenue for each country":
-        getting_result = run_query(SELF_Provided_queries[query])          
-    elif query == "list the top profitable products in each category":
-        getting_result = run_query(SELF_Provided_queries[query])    
- 
-
-st.text("Thank you")
+    st.warning("Database connection is not available.")
