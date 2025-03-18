@@ -106,7 +106,7 @@ own_queries ={
         SELECT ob.order_id, ob.order_date, ob.region, ob.city, od.category, od.quantity
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id;""",
-    "3. Find All Orders for a Specific Date":"""
+    "3. Find All Orders for any one Specific Date":"""
         SELECT ob.order_id, ob.order_date, ob.city, ob.state, od.category, od.quantity
         FROM orders_basic ob JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.order_date = '2022-06-20';""",
     "4. Find Total Discount per Order":"""
@@ -115,7 +115,7 @@ own_queries ={
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id
         GROUP BY ob.order_id ORDER BY total_discount DESC;""",
-    "5. Get Orders for a Specific Customer Segment":"""
+    "5. Get Orders for a Specific Corporate Segment":"""
         SELECT ob.order_id, ob.order_date, ob.segment, od.category, od.quantity
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.segment = 'Corporate';""",
