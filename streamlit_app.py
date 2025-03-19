@@ -119,7 +119,7 @@ own_queries ={
         SELECT ob.order_id, ob.order_date, ob.segment, od.category, od.quantity
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.segment = 'Corporate';""",
-    "6. Identify the top 5 best-selling product categories based on quantity sold:"""
+    "6. Identify the top 5 best-selling product categories based on quantity sold":"""
         SELECT od.category, SUM(od.quantity) AS total_quantity_sold
         FROM orders_details od
         GROUP BY od.category
