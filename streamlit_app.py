@@ -123,7 +123,7 @@ own_queries ={
         SELECT od.category, SUM(od.quantity) AS total_quantity_sold
         FROM orders_details od
         GROUP BY od.category
-        BY total_quantity_sold DESC
+        ORDER BY total_quantity_sold DESC
         LIMIT 5;""",
     "7. Find Orders with the Highest Quantity Ordered":"""
         SELECT ob.order_id, ob.order_date,
