@@ -30,7 +30,7 @@ conn = connect_to_database()
 #Queries
 given_queries ={
     "1. Top 10 Highest Revenue Generating Products": """
-        SELECT 
+        SELECT
             category AS product_name,
             SUM(quantity * list_price) AS total_revenue
         FROM orders_csv
@@ -42,7 +42,7 @@ given_queries ={
             ROUND(
                CASE
                WHEN SUM(quantity * list_price) = 0 THEN 0  -- Avoid division by zero
-               ELSE (SUM(quantity * (list_price - cost_price))::NUMERIC / 
+               ELSE (SUM(quantity * (list_price - cost_price))::NUMERIC /
                      NULLIF(SUM(quantity * list_price), 0)) * 100
            END, 2) AS profit_margin
         FROM orders_csv WHERE list_price IS NOT NULL AND cost_price IS NOT NULL AND quantity > 0  -- Ensure no missing or invalid data
@@ -102,11 +102,11 @@ own_queries ={
         SELECT ob.order_id,ob.order_date, ob.region, ob.segment, ob.ship_mode, od.category, od.quantity, od.cost_price, od.list_price
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id;""",
-    "2. Find Orders in all Regions":"""
+    "2. Find Orders in a Specific Region":"""
         SELECT ob.order_id, ob.order_date, ob.region, ob.city, od.category, od.quantity
         FROM orders_basic ob
-        JOIN orders_details od ON ob.order_id = od.order_id;""",
-    "3. Find All Orders for any one Specific Date":"""
+        JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.region = 'West';""",
+    "3. Find All Orders for a Specific Date":"""
         SELECT ob.order_id, ob.order_date, ob.city, ob.state, od.category, od.quantity
         FROM orders_basic ob JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.order_date = '2022-06-20';""",
     "4. Find Total Discount per Order":"""
@@ -115,16 +115,16 @@ own_queries ={
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id
         GROUP BY ob.order_id ORDER BY total_discount DESC;""",
-    "5. Get Orders for a Specific Corporate Segment":"""
+    "5. Get Orders for a Specific Customer Segment":"""
         SELECT ob.order_id, ob.order_date, ob.segment, od.category, od.quantity
         FROM orders_basic ob
         JOIN orders_details od ON ob.order_id = od.order_id WHERE ob.segment = 'Corporate';""",
-    "6. Identify the top 5 best-selling product categories based on quantity sold":"""
-        SELECT od.category, SUM(od.quantity) AS total_quantity_sold
-        FROM orders_details od
-        GROUP BY od.category
-        ORDER BY total_quantity_sold DESC
-        LIMIT 5;""",
+    "6. Calculate the Average List Price of Products":"""
+        SELECT ob.order_id, AVG(od.list_price) AS avg_list_price
+        FROM orders_basic ob
+        JOIN orders_details od ON ob.order_id = od.order_id
+        GROUP BY ob.order_id
+        ORDER BY avg_list_price DESC;""",
     "7. Find Orders with the Highest Quantity Ordered":"""
         SELECT ob.order_id, ob.order_date,
                SUM(od.quantity) AS total_quantity
@@ -154,6 +154,7 @@ own_queries ={
         GROUP BY ob.order_id
         ORDER BY total_discount DESC;"""
 }
+
 # Streamlit UI
 st.title("Retail Order Data Analysts Project")
 st.sidebar.title("Options")
@@ -174,7 +175,7 @@ if conn:
             #st.success("Query executed successfully!")
             st.write(f"### Results for: {query_selection}")
             st.dataframe(data)
-        
+
             if "product_name" in data.columns and "total_revenue" in data.columns:
                chart = alt.Chart(data).mark_bar().encode(
                x="product_name",
