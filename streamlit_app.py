@@ -12,82 +12,6 @@ def load_data():
 
 df1, df2 = load_data()
 
-# Function to execute a query and return the result as a pandas DataFrame
-def run_query(query):
-    conn = sqlite3.connect(":memory:")
-    cursor = conn.cursor()
-    df1.to_sql("order_data", conn, index=False, if_exists="replace")
-    df2.to_sql("product_data", conn, index=False, if_exists="replace")
-    
-    try:
-        df_result = pd.read_sql_query(query, conn)
-        return df_result
-    except Exception as e:
-        st.error(f"Error executing query: {e}")
-        return None
-    finally:
-        conn.close()
-
-# Function to generate charts based on the data
-def generate_chart(data):
-    if "product_name" in data.columns and "total_revenue" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="product_name",
-            y="total_revenue",
-            color="product_name",
-        )
-    elif "city" in data.columns and "profit_margin" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="city",
-            y="profit_margin",
-            color="city",
-        )
-    elif "category" in data.columns and "total_discount" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="category",
-            y="total_discount",
-            color="category",
-        )
-    elif "category" in data.columns and "Avg_saleprice" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="category",
-            y="Avg_saleprice",
-            color="category",
-        )
-    elif "region" in data.columns and "avg_sales" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="region",
-            y="avg_sales",
-            color="region",
-        )
-    elif "category" in data.columns and "total_profit" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="category",
-            y="total_profit",
-            color="category",
-        )
-    elif "segment" in data.columns and "highest_quantity" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="segment",
-            y="highest_quantity",
-            color="segment",
-        )
-    elif "region" in data.columns and "avg_discount" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="region",
-            y="avg_discount",
-            color="region",
-        )
-    elif "order_year" in data.columns and "Revenue_per_year" in data.columns:
-        chart = alt.Chart(data).mark_bar().encode(
-            x="order_year",
-            y="Revenue_per_year",
-            color="order_year",
-        )
-    else:
-        return None
-    
-    return chart
 
 # Queries
 given_queries = {
@@ -247,11 +171,5 @@ if st.button("Run Query"):
             st.write(f"### Results for: {query_selection}")
             st.dataframe(data)
             
-            # Generate and display chart
-            chart = generate_chart(data)
-            if chart:
-                st.altair_chart(chart, use_container_width=True)
-            else:
-                st.write("No suitable data found for visualization.")
     except Exception as e:
         st.error(f"Error executing the query: {e}")
