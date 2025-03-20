@@ -29,6 +29,22 @@ def run_query(query):
         conn.close()
 
 # Function to generate charts based on the data
+def run_query(query):
+    conn = sqlite3.connect(":memory:")
+    cursor = conn.cursor()
+    df1.to_sql("order_data", conn, index=False, if_exists="replace")
+    df2.to_sql("product_data", conn, index=False, if_exists="replace")
+    
+    try:
+        df_result = pd.read_sql_query(query, conn)
+        return df_result
+    except Exception as e:
+        st.error(f"Error executing query: {e}")
+        return None
+    finally:
+        conn.close()
+
+# Function to generate charts based on the data
 def generate_chart(data, query_name):
     if "revenue" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
