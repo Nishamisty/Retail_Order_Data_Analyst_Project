@@ -166,154 +166,151 @@ query_selection = st.selectbox(
 )
 
 datas = pd.read_csv("data.csv")
-    if st.button("Run Query"):
-        query = given_queries[query_selection] if query_type == "Given Queries" else own_queries[query_selection]
-        try:
-            # Execute query and fetch results
-            data = pd.read_sql_query(query,datas)
-            #st.success("Query executed successfully!")
-            st.write(f"### Results for: {query_selection}")
-            st.dataframe(data)
+if st.button("Run Query"):
+    query = given_queries[query_selection] if query_type == "Given Queries" else own_queries[query_selection]
+    try:
+        # Execute query and fetch results
+        data = pd.read_sql_query(query,datas)
+        #st.success("Query executed successfully!")
+        st.write(f"### Results for: {query_selection}")
+        st.dataframe(data)
+        if "product_name" in data.columns and "total_revenue" in data.columns:
+           chart = alt.Chart(data).mark_bar().encode(
+           x="product_name",
+           y="total_revenue",
+           color="product_name",
+         )
+           st.altair_chart(chart, use_container_width=True)
 
-            if "product_name" in data.columns and "total_revenue" in data.columns:
-               chart = alt.Chart(data).mark_bar().encode(
-               x="product_name",
-               y="total_revenue",
-               color="product_name",
-             )
-               st.altair_chart(chart, use_container_width=True)
+        elif "city" in data.columns and "profit_margin" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="city",
+                y="profit_margin",
+                color="city",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "city" in data.columns and "profit_margin" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="city",
-                    y="profit_margin",
-                    color="city",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "category" in data.columns and "total_discount" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="category",
+                y="total_discount",
+                color="category",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "category" in data.columns and "total_discount" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="category",
-                    y="total_discount",
-                    color="category",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "category" in data.columns and "average_sale_price" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="category",
+                y="average_sale_price",
+                color="category",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "category" in data.columns and "average_sale_price" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="category",
-                    y="average_sale_price",
-                    color="category",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "region" in data.columns and "average_sale_price" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="region",
+                y="average_sale_price",
+                color="region",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "region" in data.columns and "average_sale_price" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="region",
-                    y="average_sale_price",
-                    color="region",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "category" in data.columns and "total_profit" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="category",
+                y="total_profit",
+                color="category",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "category" in data.columns and "total_profit" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="category",
-                    y="total_profit",
-                    color="category",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "segment" in data.columns and "total_quantity" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="segment",
+                y="total_quantity",
+                color="segment",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "segment" in data.columns and "total_quantity" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="segment",
-                    y="total_quantity",
-                    color="segment",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "region" in data.columns and "average_discount_percentage" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="region",
+                y="average_discount_percentage",
+                color="region",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "region" in data.columns and "average_discount_percentage" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="region",
-                    y="average_discount_percentage",
-                    color="region",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "year" in data.columns and "total_revenue" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="year",
+                y="total_revenue",
+                color="year",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "year" in data.columns and "total_revenue" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="year",
-                    y="total_revenue",
-                    color="year",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "order_id" in data.columns and "total_discount" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="order_id",
+                y="total_discount",
+                color="order_id",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "order_id" in data.columns and "total_discount" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="order_id",
-                    y="total_discount",
-                    color="order_id",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "order_date" in data.columns and "quantity" in data.columns:
+            chart = alt.Chart(data).mark_line().encode(
+                x="order_date",
+                y="quantity",
+                color="order_date",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "order_date" in data.columns and "quantity" in data.columns:
-                chart = alt.Chart(data).mark_line().encode(
-                    x="order_date",
-                    y="quantity",
-                    color="order_date",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "order_id" in data.columns and "total_profit" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="order_id",
+                y="total_profit",
+                color="order_id",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "order_id" in data.columns and "total_profit" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="order_id",
-                    y="total_profit",
-                    color="order_id",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "region" in data.columns and "total_revenue" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="region",
+                y="total_revenue",
+                color="region",
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "region" in data.columns and "total_revenue" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="region",
-                    y="total_revenue",
-                    color="region",
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "avg_list_price" in data.columns and "order_id" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="order_id:N",  # Treat order_id as a nominal variable
+                y="avg_list_price:Q",  # Treat avg_list_price as a quantitative variable
+                color="order_id:N",
+            ).properties(
+                title="Average List Price Per Order"
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "avg_list_price" in data.columns and "order_id" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="order_id:N",  # Treat order_id as a nominal variable
-                    y="avg_list_price:Q",  # Treat avg_list_price as a quantitative variable
-                    color="order_id:N",
-                ).properties(
-                    title="Average List Price Per Order"
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "order_id" in data.columns and "total_quantity" in data.columns:
+            top_quantity_orders = data.nlargest(10, "total_quantity")
+            chart = alt.Chart(top_quantity_orders).mark_bar().encode(
+                x="order_id:N",
+                y="total_quantity:Q",
+                color="order_id:N",
+            ).properties(
+                title="Top 10 Orders with Highest Quantity"
+            )
+            st.altair_chart(chart, use_container_width=True)
 
-            elif "order_id" in data.columns and "total_quantity" in data.columns:
-                top_quantity_orders = data.nlargest(10, "total_quantity")
-                chart = alt.Chart(top_quantity_orders).mark_bar().encode(
-                    x="order_id:N",
-                    y="total_quantity:Q",
-                    color="order_id:N",
-                ).properties(
-                    title="Top 10 Orders with Highest Quantity"
-                )
-                st.altair_chart(chart, use_container_width=True)
+        elif "order_id" in data.columns and "total_revenue" in data.columns:
+            chart = alt.Chart(data).mark_bar().encode(
+                x="order_id:N",
+                y="total_revenue:Q",
+                color="order_id:N",
+            ).properties(
+                title="Total Revenue Per Order"
+            )
+            st.altair_chart(chart, use_container_width=True)
+        else:
+            st.write("No suitable data found for visualization.")
 
-            elif "order_id" in data.columns and "total_revenue" in data.columns:
-                chart = alt.Chart(data).mark_bar().encode(
-                    x="order_id:N",
-                    y="total_revenue:Q",
-                    color="order_id:N",
-                ).properties(
-                    title="Total Revenue Per Order"
-                )
-                st.altair_chart(chart, use_container_width=True)
-            else:
-                st.write("No suitable data found for visualization.")
-
-        except Exception as e:
-               st.error("Error executing the query.")
-               st.error(f"Error: {e}")
-else:
-    st.warning("Database connection is not available.")
+    except Exception as e:
+           st.error("Error executing the query.")
+           st.error(f"Error: {e}")
