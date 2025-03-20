@@ -29,8 +29,7 @@ def run_query(query):
     except Exception as e:
         st.error(f"Error executing query: {e}")
         return None
-    finally:
-        conn.close()
+
 
 #Queries
 given_queries ={
