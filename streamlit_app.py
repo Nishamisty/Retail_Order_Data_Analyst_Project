@@ -163,7 +163,7 @@ if st.button("Run Query"):
     query = given_queries[query_selection] if query_type == "Given Queries" else own_queries[query_selection]
     try:
         # Execute query and fetch results
-        data = pd.read_sql_query(query,conn)
+        data = pd.read_sql_query(run_query(query),conn)
         #st.success("Query executed successfully!")
         st.write(f"### Results for: {query_selection}")
         st.dataframe(data)
