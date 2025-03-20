@@ -8,9 +8,6 @@ import sqlite3
 def load_data():
     df1 = pd.read_csv(r"order.csv")  
     df2 = pd.read_csv(r"product.csv")
-    df2["product_id"] = df2["product_id"].astype(str)
-    df2["category"] = df2["category"].astype(str)
-    df1["segment"] = df2["segment"].astype(str)
     return df1, df2
 
 df1, df2 = load_data()
