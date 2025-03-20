@@ -166,7 +166,6 @@ query_selection = st.selectbox(
 )
 
 datas = pd.read_csv("data.csv")
-if datas:
     if st.button("Run Query"):
         query = given_queries[query_selection] if query_type == "Given Queries" else own_queries[query_selection]
         try:
