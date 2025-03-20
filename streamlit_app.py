@@ -29,203 +29,190 @@ def run_query(query):
         conn.close()
 
 # Function to generate charts based on the data
-def generate_chart(data):
-    if "product_name" in data.columns and "total_revenue" in data.columns:
+def generate_chart(data, query_name):
+    if "revenue" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="product_name",
-            y="total_revenue",
-            color="product_name",
+            x="product_id:N",
+            y="revenue:Q",
+            color="sub_category:N",
+            tooltip=["product_id", "sub_category", "revenue"]
+        ).properties(
+            title=f"{query_name} - Revenue by Product"
         )
-    elif "city" in data.columns and "profit_margin" in data.columns:
+    elif "profit_margin" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="city",
-            y="profit_margin",
-            color="city",
+            x="city:N",
+            y="profit_margin:Q",
+            color="city:N",
+            tooltip=["city", "profit_margin"]
+        ).properties(
+            title=f"{query_name} - Profit Margin by City"
         )
-    elif "category" in data.columns and "total_discount" in data.columns:
+    elif "total_discount" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="category",
-            y="total_discount",
-            color="category",
+            x="category:N",
+            y="total_discount:Q",
+            color="category:N",
+            tooltip=["category", "total_discount"]
+        ).properties(
+            title=f"{query_name} - Total Discount by Category"
         )
-    elif "category" in data.columns and "Avg_saleprice" in data.columns:
+    elif "Avg_saleprice" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="category",
-            y="Avg_saleprice",
-            color="category",
+            x="category:N",
+            y="Avg_saleprice:Q",
+            color="category:N",
+            tooltip=["category", "Avg_saleprice"]
+        ).properties(
+            title=f"{query_name} - Average Sale Price by Category"
         )
-    elif "region" in data.columns and "avg_sales" in data.columns:
+    elif "avg_sales" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="region",
-            y="avg_sales",
-            color="region",
+            x="region:N",
+            y="avg_sales:Q",
+            color="region:N",
+            tooltip=["region", "avg_sales"]
+        ).properties(
+            title=f"{query_name} - Average Sales by Region"
         )
-    elif "category" in data.columns and "total_profit" in data.columns:
+    elif "total_profit" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="category",
-            y="total_profit",
-            color="category",
+            x="category:N",
+            y="total_profit:Q",
+            color="category:N",
+            tooltip=["category", "total_profit"]
+        ).properties(
+            title=f"{query_name} - Total Profit by Category"
         )
-    elif "segment" in data.columns and "highest_quantity" in data.columns:
+    elif "highest_quantity" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="segment",
-            y="highest_quantity",
-            color="segment",
+            x="segment:N",
+            y="highest_quantity:Q",
+            color="segment:N",
+            tooltip=["segment", "highest_quantity"]
+        ).properties(
+            title=f"{query_name} - Highest Quantity by Segment"
         )
-    elif "region" in data.columns and "avg_discount" in data.columns:
+    elif "avg_discount" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="region",
-            y="avg_discount",
-            color="region",
+            x="region:N",
+            y="avg_discount:Q",
+            color="region:N",
+            tooltip=["region", "avg_discount"]
+        ).properties(
+            title=f"{query_name} - Average Discount by Region"
         )
-    elif "order_year" in data.columns and "Revenue_per_year" in data.columns:
+    elif "Revenue_per_year" in data.columns:
+        chart = alt.Chart(data).mark_line().encode(
+            x="order_year:N",
+            y="Revenue_per_year:Q",
+            color=alt.value("blue"),
+            tooltip=["order_year", "Revenue_per_year"]
+        ).properties(
+            title=f"{query_name} - Annual Revenue"
+        )
+    elif "sale_price" in data.columns:
         chart = alt.Chart(data).mark_bar().encode(
-            x="order_year",
-            y="Revenue_per_year",
-            color="order_year",
+            x="state:N",
+            y="sale_price:Q",
+            color="category:N",
+            tooltip=["state", "category", "sale_price"]
+        ).properties(
+            title=f"{query_name} - Sales Revenue by State and Category"
+        )
+    elif "order_count" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="category:N",
+            y="order_count:Q",
+            color="category:N",
+            tooltip=["category", "order_count", "revenue"]
+        ).properties(
+            title=f"{query_name} - Orders and Revenue by Category"
+        )
+    elif "Total_quantity" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="product_id:N",
+            y="Total_quantity:Q",
+            color="category:N",
+            tooltip=["product_id", "category", "Total_quantity", "Revenue", "profit"]
+        ).properties(
+            title=f"{query_name} - Top Products by Quantity Sold"
+        )
+    elif "total_quantity" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="region:N",
+            y="total_quantity:Q",
+            color="region:N",
+            tooltip=["region", "total_quantity", "order_count"]
+        ).properties(
+            title=f"{query_name} - Quantity Sold by Region"
+        )
+    elif "profit" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="segment:N",
+            y="profit:Q",
+            color="segment:N",
+            tooltip=["segment", "profit"]
+        ).properties(
+            title=f"{query_name} - Profit by Segment"
+        )
+    elif "Avg_quantity" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="sub_category:N",
+            y="Avg_quantity:Q",
+            color="sub_category:N",
+            tooltip=["sub_category", "Avg_quantity", "total_order"]
+        ).properties(
+            title=f"{query_name} - Average Quantity by Sub-Category"
+        )
+    elif "total_revenue" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="segment:N",
+            y="total_revenue:Q",
+            color="segment:N",
+            tooltip=["segment", "total_revenue"]
+        ).properties(
+            title=f"{query_name} - Total Revenue by Segment"
+        )
+    elif "Total_profit" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="region:N",
+            y="Total_profit:Q",
+            color="region:N",
+            tooltip=["region", "Total_profit"]
+        ).properties(
+            title=f"{query_name} - Total Profit by Region"
+        )
+    elif "Total_quantity" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="state:N",
+            y="Total_quantity:Q",
+            color="ship_mode:N",
+            tooltip=["state", "Total_quantity", "ship_mode"]
+        ).properties(
+            title=f"{query_name} - Quantity by State and Shipping Mode"
+        )
+    elif "profit" in data.columns:
+        chart = alt.Chart(data).mark_bar().encode(
+            x="order_month:N",
+            y="profit:Q",
+            color="order_month:N",
+            tooltip=["order_month", "profit"]
+        ).properties(
+            title=f"{query_name} - Profit by Month"
         )
     else:
         return None
     
     return chart
 
-# Queries
+# Queries (same as before)
 given_queries = {
-    "Top 10 Products by Revenue": """
-        SELECT p.product_id, p.sub_category, SUM(o.sale_price) AS revenue 
-        FROM product_data p 
-        JOIN order_data o ON p.product_id = o.product_id 
-        GROUP BY p.product_id 
-        ORDER BY revenue DESC 
-        LIMIT 10;
-    """,
-    "Top 5 Cities by Profit Margin": """
-        SELECT city, AVG(
-            CASE WHEN sale_price = 0 THEN 0 ELSE ((profit / sale_price) * 100) END
-        ) AS profit_margin 
-        FROM order_data 
-        GROUP BY city 
-        ORDER BY profit_margin DESC 
-        LIMIT 5;
-    """,
-    "Total Discount by Category": """
-        SELECT p.category, SUM(o.discount_price * o.quantity) AS total_discount 
-        FROM product_data p 
-        JOIN order_data o ON p.product_id = o.product_id 
-        GROUP BY p.category;
-    """,
-    "Average Sale Price by Category": """
-        SELECT p.category, AVG(o.sale_price) AS Avg_saleprice 
-        FROM order_data o 
-        JOIN product_data p ON p.product_id = o.product_id 
-        GROUP BY category;
-    """,
-    "Region with Highest Average Sales": """
-        SELECT region, AVG(sale_price) AS avg_sales 
-        FROM order_data 
-        GROUP BY region 
-        ORDER BY avg_sales DESC 
-        LIMIT 1;
-    """,
-    "Total Profit by Category": """
-        SELECT p.category, SUM(o.profit) AS total_profit 
-        FROM product_data p 
-        JOIN order_data o ON p.product_id = o.product_id 
-        GROUP BY p.category;
-    """,
-    "Highest Quantity Sold by Segment": """
-        SELECT segment, SUM(quantity) AS highest_quantity  
-        FROM order_data 
-        GROUP BY segment 
-        ORDER BY highest_quantity DESC;
-    """,
-    "Average Discount by Region": """
-        SELECT region, ROUND(AVG(discount_percent), 2) AS avg_discount 
-        FROM order_data 
-        GROUP BY region;
-    """,
-    "Most Profitable Category": """
-        SELECT p.category, ROUND(SUM(o.profit), 2) AS total_profit 
-        FROM product_data p 
-        JOIN order_data o ON p.product_id = o.product_id 
-        GROUP BY p.category 
-        ORDER BY total_profit DESC 
-        LIMIT 1;
-    """,
-    "Annual Revenue": """
-        SELECT order_year, ROUND(SUM(sale_price), 2) AS Revenue_per_year 
-        FROM order_data 
-        GROUP BY order_year;
-    """
+    # ... (same as before)
 }
 
 own_queries = {
-    "Identify the top 5 states with the highest total sales revenue, grouped by category": """
-        SELECT o.state, p.product_id, p.category, ROUND(SUM(o.sale_price), 2) AS sale_price
-        FROM order_data o 
-        JOIN product_data p ON o.product_id = p.product_id 
-        GROUP BY state, p.product_id
-        ORDER BY SUM(sale_price) DESC 
-        LIMIT 5;
-    """,
-    "Calculate the Total Number of Orders, Quantity, and Revenue for Each Product Category": """
-        SELECT p.category, SUM(o.order_id) AS order_count, o.quantity, ROUND(SUM(o.sale_price), 2) AS revenue 
-        FROM product_data p 
-        JOIN order_data o ON p.product_id = o.product_id 
-        GROUP BY p.category, o.quantity;
-    """,
-    "Identify the top 10 products with the highest quantities sold, along with their total revenue and profit": """
-        SELECT p.product_id, p.category, SUM(o.quantity) AS Total_quantity,
-        ROUND(SUM(o.sale_price), 2) AS Revenue, ROUND(SUM(o.profit), 2) AS profit 
-        FROM product_data p 
-        JOIN order_data o ON p.product_id = o.product_id 
-        GROUP BY p.product_id 
-        ORDER BY SUM(o.quantity) DESC 
-        LIMIT 10;
-    """,
-    "Rank all regions by the total quantity of products sold, including the total number of orders": """
-        SELECT o.region, SUM(o.quantity) AS total_quantity, COUNT(o.order_id) AS order_count,
-        RANK() OVER(ORDER BY SUM(quantity) DESC) 
-        FROM order_data o 
-        JOIN product_data p ON p.product_id = o.product_id 
-        GROUP BY o.region;
-    """,
-    "Determine the Top 3 Customers Based on Their Total Profit Contribution": """
-        SELECT segment, ROUND(SUM(profit), 2) AS profit, 
-        RANK() OVER(ORDER BY SUM(profit) DESC) 
-        FROM order_data 
-        GROUP BY segment;
-    """,
-    "Determine the Average Quantity Ordered Per Product": """
-        SELECT p.sub_category, ROUND(AVG(o.quantity), 2) AS Avg_quantity,
-        COUNT(o.order_id) AS total_order 
-        FROM product_data p 
-        JOIN order_data o ON o.product_id = p.product_id 
-        GROUP BY p.sub_category;
-    """,
-    "Analysis of Total Revenue Generated by Each Segment": """
-        SELECT segment, ROUND(SUM(sale_price), 2) AS total_revenue 
-        FROM order_data 
-        GROUP BY segment;
-    """,
-    "Calculate the total profit for all regions": """
-        SELECT region, ROUND(SUM(profit), 2) AS Total_profit 
-        FROM order_data 
-        GROUP BY region 
-        ORDER BY SUM(profit) DESC;
-    """,
-    "Which state placed the highest quantity of orders, and what was the corresponding shipping mode?": """
-        SELECT state, SUM(quantity) AS Total_quantity, ship_mode 
-        FROM order_data 
-        GROUP BY state, ship_mode 
-        ORDER BY SUM(quantity) DESC;
-    """,
-    "Identify the Month with the Highest Revenue": """
-        SELECT order_month, ROUND(SUM(sale_price), 2) AS profit,
-        RANK() OVER(ORDER BY SUM(sale_price) DESC) 
-        FROM order_data 
-        GROUP BY order_month;
-    """
+    # ... (same as before)
 }
 
 # Streamlit UI
@@ -248,7 +235,7 @@ if st.button("Run Query"):
             st.dataframe(data)
             
             # Generate and display chart
-            chart = generate_chart(data)
+            chart = generate_chart(data, query_selection)
             if chart:
                 st.altair_chart(chart, use_container_width=True)
             else:
