@@ -3,22 +3,14 @@ import pandas as pd
 import psycopg2
 from psycopg2 import sql
 import altair as alt
-
-# Database connection settings
-db_params = {
-    "host": "dbnishaaws.c1wuecawins0.ap-south-1.rds.amazonaws.com",
-    "database": "postgres",
-    "user": "postgres",
-    "password": "rootuser",
-    "port": "5432"  # Default PostgreSQL port
-}
+import sqlite3
 
 # Establish database connection
 @st.cache_resource  # Cache connection for performance
 def connect_to_database():
     try:
-        conn = psycopg2.connect(**db_params)
-        #st.success("Connected to the database!")
+        conn = sqlite3.connect("data.db")
+        cursor = conn.cursor()
         return conn
     except Exception as e:
         st.error("Failed to connect to the database.")
@@ -165,12 +157,11 @@ query_selection = st.selectbox(
     list(given_queries.keys() if query_type == "Given Queries" else own_queries.keys()),
 )
 
-datas = pd.read_csv("data.csv")
 if st.button("Run Query"):
     query = given_queries[query_selection] if query_type == "Given Queries" else own_queries[query_selection]
     try:
         # Execute query and fetch results
-        data = pd.read_sql_query(query,datas)
+        data = pd.read_sql_query(query,conn)
         #st.success("Query executed successfully!")
         st.write(f"### Results for: {query_selection}")
         st.dataframe(data)
@@ -310,7 +301,7 @@ if st.button("Run Query"):
             st.altair_chart(chart, use_container_width=True)
         else:
             st.write("No suitable data found for visualization.")
-
+        conn.close()
     except Exception as e:
            st.error("Error executing the query.")
            st.error(f"Error: {e}")
