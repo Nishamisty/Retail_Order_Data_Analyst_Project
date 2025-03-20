@@ -165,7 +165,7 @@ query_selection = st.selectbox(
     list(given_queries.keys() if query_type == "Given Queries" else own_queries.keys()),
 )
 
-data = pd.DataFrame()
+data = pd.read_csv("data.csv")
 if conn:
     if st.button("Run Query"):
         query = given_queries[query_selection] if query_type == "Given Queries" else own_queries[query_selection]
